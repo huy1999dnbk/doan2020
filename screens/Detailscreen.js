@@ -46,7 +46,6 @@ const Detailscreen = ({ route, navigation }) => {
   const [reRender, setReRender] = useState(false);
   const [searchProduct, setSearchProduct] = useState([]);
   const [showCart, setShowCart] = useState(false)
-  //const [cart, setCart] = useState([]);
   //AddUser Start
   const [adduser, setAddUser] = useState(false)
   const [showAdduser, setShowAdduser] = useState(false)
