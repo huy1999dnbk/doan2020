@@ -19,6 +19,10 @@ import { faLuggageCart } from '@fortawesome/free-solid-svg-icons';
 import Appbutton from '../component/Appbutton';
 import Addproduct from '../component/Addproduct';
 import Input from '../component/Input';
+
+//ModalComponent
+import ItemCart from '../component/modalComponent/ItemCart'
+
 const Detailscreen = ({ route }) => {
   const [productByIdWh, setProductByIdWh] = useState([]);
   const [isShowModal, setShowModal] = useState(false);
@@ -251,19 +255,20 @@ const Detailscreen = ({ route }) => {
 
   const Itemcart = ({ item }) => {
     return (
-      <TouchableWithoutFeedback onPressOut={() => removeItem(item.name)}>
-        <View style={{ flexDirection: 'row', width: '100%', height: 70, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderRadius: 15, marginBottom: 20 }}>
-          <View style={{ width: 200, marginLeft: 15 }}>
-            <Text style={styles.textcart}>{item.name}</Text>
-          </View>
-          <View style={{ width: 100 }}>
-            <Text style={styles.textcart}>{item.actionType}</Text>
-          </View>
-          <View style={{ width: 70 }}>
-            <Text style={styles.textcart}>{item.stock}</Text>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
+      // <TouchableWithoutFeedback onPressOut={() => removeItem(item.name)}>
+      //   <View style={{ flexDirection: 'row', width: '100%', height: 70, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderRadius: 15, marginBottom: 20 }}>
+      //     <View style={{ width: 200, marginLeft: 15 }}>
+      //       <Text style={styles.textcart}>{item.name}</Text>
+      //     </View>
+      //     <View style={{ width: 100 }}>
+      //       <Text style={styles.textcart}>{item.actionType}</Text>
+      //     </View>
+      //     <View style={{ width: 70 }}>
+      //       <Text style={styles.textcart}>{item.stock}</Text>
+      //     </View>
+      //   </View>
+      // </TouchableWithoutFeedback>
+      <ItemCart item={item} removeItem={removeItem} />
     );
   };
 
