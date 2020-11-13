@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { StyleSheet, Alert, TouchableOpacity, Modal, Text, View, TextInput, FlatList } from 'react-native';
@@ -130,17 +131,39 @@ const MainRoutes = () => {
               renderItem={({ item }) => {
                 return (
                   <TouchableOpacity onPress={() => {
-                    Alert.alert('Notice!!!', 'Do you agree to add this user?', [
+                    Alert.alert('Notice!!!', 'You want to add user?', [
                       {
                         text: 'Yes',
                         onPress: async () => {
-                          await AsyncStorage.removeItem('idtoken');
-                          props.navigation.navigate('Login');
+
+                          const tokenId1 = await AsyncStorage.getItem('idtoken');
+                          const idhouse = await AsyncStorage.getItem('id_warehouse');
+                          await fetch(
+                            `https://cnpmwarehouse.herokuapp.com/warehouses/user`,
+                            {
+                              method: 'POST',
+                              headers: {
+                                accept: 'application/json',
+                                Authorization: `Bearer ${tokenId1}`,
+                              },
+                              body: JSON.stringify({
+                                userId: item.id.toString(),
+                                warehouseId: idhouse.toString(),
+                              }),
+                            }
+                          )
+                            .then((res) => res.json())
+                            .then((resJson) => {
+                              if (resJson.statusCode == 200) {
+                                console.log(resJson.statusCode);
+                              }
+                            });
                         },
                       },
                       { text: 'No', style: 'cancel' },
                     ])
-                  }}>
+                  }
+                  }>
                     <View style={{ height: 60, flexDirection: 'row' }}>
                       <View style={{ alignSelf: 'center', marginRight: '7%' }}>
                         <FontAwesomeIcon

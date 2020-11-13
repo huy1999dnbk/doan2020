@@ -37,7 +37,10 @@ const Detailscreen = ({ route }) => {
   const [searchProduct, setSearchProduct] = useState([]);
   const [showCart, setShowCart] = useState(false)
   //const [cart, setCart] = useState([]);
-
+  const takeid = async() => {
+    await AsyncStorage.setItem('id_warehouse', idwarehouse.toString());
+  }
+  takeid();
   // ham nay noi 2 mang addstock va searchproduct
   const handleCart = () => {
     setAddStock(addStock.concat(searchProduct));

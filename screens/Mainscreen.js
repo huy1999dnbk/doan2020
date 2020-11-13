@@ -8,6 +8,7 @@ import {
   Pressable,
   ActivityIndicator,
   Animated,
+  Button
 } from 'react-native';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faPrescriptionBottle} from '@fortawesome/free-solid-svg-icons';
@@ -21,6 +22,7 @@ const Mainscreen = ({navigation}) => {
   const [pageCurrent, setPageCurrent] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
+
 
 
   useEffect(() => {
