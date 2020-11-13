@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Alert, TouchableOpacity, Modal, Text, View } from 'react-native';
+import { StyleSheet, Alert, TouchableOpacity, Modal, Text, View, TextInput, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 import {
@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons';
 import Appbutton from './component/Appbutton';
 import jwt_decode from "jwt-decode";
 const Stack = createStackNavigator();
@@ -46,19 +47,23 @@ function CustomDrawerContent({ ...props }) {
   );
 }
 
+
+
+
 const MainRoutes = () => {
   const [adduser, setAddUser] = useState(false);
-  const checkToken =  async () => {
+  const [query, setQuery] = useState('');
+  const [user, setUser] = useState([]);
+  const checkToken = async () => {
     const tokenuser = await AsyncStorage.getItem('idtoken');
     var decoded = jwt_decode(tokenuser);
-    console.log(decoded);
     if (decoded.permissionIds[0].permission == 'CHIEF_EMPLOYEE') {
       setAddUser(true);
     }
   };
   checkToken();
   const ADD_USER = () => {
-    return adduser ? (
+    return (
       <TouchableOpacity onPress={() => setShowModal(true)}>
         <FontAwesomeIcon
           style={styles.icondetail}
@@ -66,14 +71,108 @@ const MainRoutes = () => {
           size={25}
         />
       </TouchableOpacity>
-    ) : null;
+    )
   };
   const [showModal, setShowModal] = useState(false);
+
+
+
+
+  const fetchUser = async () => {
+    const tokenID = await AsyncStorage.getItem('idtoken');
+    if (query === '') return;
+    else if (query !== '') {
+      var handledQuery = query.replace(/ /g, '%20');
+
+      await fetch(
+        `https://cnpmwarehouse.herokuapp.com/Users/search/${handledQuery}`,
+        {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${tokenID}`,
+          },
+        },
+      )
+        .then((res) => res.json())
+        .then((resJson) => {
+          setUser(resJson.data.users);
+        });
+    }
+  };
+
+  useEffect(() => {
+    fetchUser();
+  }, [query]);
+
+  const updateQuery = (input) => {
+    setQuery(input);
+  };
+
   return (
     <>
       <Modal visible={showModal} transparent={true} animationType="none">
         <View style={styles.ViewCart}>
-          <Text>Hello world</Text>
+          <View style={{ marginHorizontal: 10, marginTop: 15 }}>
+            <TextInput
+              placeholder="Find user here"
+              onChangeText={(query) => updateQuery(query)}
+              value={query}
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.listcart}>
+            <FlatList
+              data={user}
+              numColumns={1}
+              extraData={query}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity onPress={() => {
+                    Alert.alert('Notice!!!', 'Do you agree to add this user?', [
+                      {
+                        text: 'Yes',
+                        onPress: async () => {
+                          await AsyncStorage.removeItem('idtoken');
+                          props.navigation.navigate('Login');
+                        },
+                      },
+                      { text: 'No', style: 'cancel' },
+                    ])
+                  }}>
+                    <View style={{ height: 60, flexDirection: 'row' }}>
+                      <View style={{ alignSelf: 'center', marginRight: '7%' }}>
+                        <FontAwesomeIcon
+                          style={styles.icondetail}
+                          icon={faUserSecret}
+                          size={35}
+                        />
+                      </View>
+                      <View>
+                        <Text style={styles.text} >Name: {item.name}</Text>
+                        <Text style={styles.text} >Phone: {item.phone}</Text>
+                        <Text style={styles.text} >Email: {item.email}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+              ItemSeparatorComponent={() => {
+                return (
+                  <View
+                    style={{
+                      height: 1,
+                      width: '100%',
+                      backgroundColor: 'black',
+                      marginBottom: 20,
+                      marginTop: 15
+                    }}
+                  />
+                );
+              }}
+            />
+          </View>
           <View>
             <Appbutton title="oke" onPress={() => setShowModal(false)} />
           </View>
@@ -90,7 +189,7 @@ const MainRoutes = () => {
                   <FontAwesomeIcon
                     style={styles.icon}
                     icon={faBars}
-                    size={25}
+                    size={30}
                   />
                 </TouchableOpacity>
               );
@@ -102,13 +201,29 @@ const MainRoutes = () => {
           name="Detail"
           component={Detailscreen}
           options={() => ({
-            headerRight: () => {ADD_USER},
+            headerRight: () => {
+              return adduser ?
+                (
+                  <TouchableOpacity onPress={() => setShowModal(true)}>
+                    <FontAwesomeIcon
+                      style={styles.icondetail}
+                      icon={faUserPlus}
+                      size={25}
+                    />
+                  </TouchableOpacity>
+                ) : null
+            },
           })}
         />
       </Stack.Navigator>
     </>
   );
 };
+
+
+
+
+
 
 const DrawerRoutes = () => {
   return (
@@ -153,7 +268,7 @@ const styles = StyleSheet.create({
   },
   icondetail: {
     color: '#FC4646',
-    marginRight: 15
+    marginRight: 25
   },
   ViewCart: {
     alignSelf: 'center',
@@ -164,6 +279,21 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 2,
     borderColor: 'black',
+  },
+  listcart: {
+    height: 300,
+    marginHorizontal: 15,
+    marginTop: 25,
+    marginBottom: 20
+  },
+  input: {
+    fontFamily: 'Roboto-Thin',
+    backgroundColor: '#E5E5E5',
+    borderRadius: 15
+  },
+  text: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 14
   },
 });
 
