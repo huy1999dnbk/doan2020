@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'react-native-gesture-handler';
-import {StyleSheet, Alert, Button, TouchableOpacity} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator, HeaderBackButton} from '@react-navigation/stack';
+import { StyleSheet, Alert, TouchableOpacity, Modal, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -13,14 +13,17 @@ import Loginscreen from './screens/Loginscreen';
 import Mainscreen from './screens/Mainscreen';
 import Signupscreen from './screens/Signupscreen';
 import Detailscreen from './screens/Detailscreen';
-import {token} from './screens/Loginscreen';
+import { token } from './screens/Loginscreen';
 import AsyncStorage from '@react-native-community/async-storage';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faBars} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import Appbutton from './component/Appbutton';
+import jwt_decode from "jwt-decode";
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-function CustomDrawerContent({...props}) {
+function CustomDrawerContent({ ...props }) {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
@@ -35,7 +38,7 @@ function CustomDrawerContent({...props}) {
                 props.navigation.navigate('Login');
               },
             },
-            {text: 'No', style: 'cancel'},
+            { text: 'No', style: 'cancel' },
           ])
         }
       />
@@ -44,28 +47,66 @@ function CustomDrawerContent({...props}) {
 }
 
 const MainRoutes = () => {
+  const [adduser, setAddUser] = useState(false);
+  const checkToken =  async () => {
+    const tokenuser = await AsyncStorage.getItem('idtoken');
+    var decoded = jwt_decode(tokenuser);
+    console.log(decoded);
+    if (decoded.permissionIds[0].permission == 'CHIEF_EMPLOYEE') {
+      setAddUser(true);
+    }
+  };
+  checkToken();
+  const ADD_USER = () => {
+    return adduser ? (
+      <TouchableOpacity onPress={() => setShowModal(true)}>
+        <FontAwesomeIcon
+          style={styles.icondetail}
+          icon={faUserPlus}
+          size={25}
+        />
+      </TouchableOpacity>
+    ) : null;
+  };
+  const [showModal, setShowModal] = useState(false);
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Main"
-        component={Mainscreen}
-        options={({navigation}) => ({
-          headerLeft: (props) => {
-            return (
-              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <FontAwesomeIcon
-                  style={styles.icon}
-                  icon={faBars}
-                  size={25}
-                />
-              </TouchableOpacity>
-            );
-          },
-          title: 'Warehouse Management',
-        })}
-      />
-      <Stack.Screen name="Detail" component={Detailscreen} />
-    </Stack.Navigator>
+    <>
+      <Modal visible={showModal} transparent={true} animationType="none">
+        <View style={styles.ViewCart}>
+          <Text>Hello world</Text>
+          <View>
+            <Appbutton title="oke" onPress={() => setShowModal(false)} />
+          </View>
+        </View>
+      </Modal>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Main"
+          component={Mainscreen}
+          options={({ navigation }) => ({
+            headerLeft: () => {
+              return (
+                <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                  <FontAwesomeIcon
+                    style={styles.icon}
+                    icon={faBars}
+                    size={25}
+                  />
+                </TouchableOpacity>
+              );
+            },
+            title: 'Warehouse Management',
+          })}
+        />
+        <Stack.Screen
+          name="Detail"
+          component={Detailscreen}
+          options={() => ({
+            headerRight: () => {ADD_USER},
+          })}
+        />
+      </Stack.Navigator>
+    </>
   );
 };
 
@@ -79,6 +120,7 @@ const DrawerRoutes = () => {
 };
 
 const App = () => {
+
   return (
     <>
       <NavigationContainer>
@@ -86,17 +128,17 @@ const App = () => {
           <Stack.Screen
             name="Login"
             component={Loginscreen}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Signup"
             component={Signupscreen}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Main"
             component={DrawerRoutes}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
@@ -107,7 +149,21 @@ const App = () => {
 const styles = StyleSheet.create({
   icon: {
     color: '#FC4646',
-    marginLeft:15
+    marginLeft: 15
+  },
+  icondetail: {
+    color: '#FC4646',
+    marginRight: 15
+  },
+  ViewCart: {
+    alignSelf: 'center',
+    marginTop: 200,
+    width: 400,
+    height: 500,
+    backgroundColor: 'white',
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: 'black',
   },
 });
 
