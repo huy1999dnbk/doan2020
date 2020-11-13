@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   },
   tinyLogo: {
     height: 180,
-    width: 150,
+    width: 100,
     borderWidth: 1,
   },
   text: {
