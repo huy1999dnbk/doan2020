@@ -1,7 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableWithoutFeedback, Button} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-const Appbutton = ({item,removeItem}) => {
+import {View, Text, StyleSheet, TouchableWithoutFeedback,} from 'react-native';
+const ItemCart = ({item,removeItem}) => {
   return (
     <TouchableWithoutFeedback onPressOut={() => removeItem(item.name)}>
         <View style={{ flexDirection: 'row', width: '100%', height: 70, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderRadius: 15, marginBottom: 20 }}>
@@ -26,4 +25,4 @@ const styles = StyleSheet.create({
       }
 });
 
-export default Appbutton;
+export default ItemCart;

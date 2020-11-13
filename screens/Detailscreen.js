@@ -19,6 +19,7 @@ import { faLuggageCart } from '@fortawesome/free-solid-svg-icons';
 import Appbutton from '../component/Appbutton';
 import Addproduct from '../component/Addproduct';
 import Input from '../component/Input';
+import CartModal from '../component/modalComponent/CartModal'
 
 //ModalComponent
 import ItemCart from '../component/modalComponent/ItemCart'
@@ -255,22 +256,22 @@ const Detailscreen = ({ route }) => {
 
   const Itemcart = ({ item }) => {
     return (
-      // <TouchableWithoutFeedback onPressOut={() => removeItem(item.name)}>
-      //   <View style={{ flexDirection: 'row', width: '100%', height: 70, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderRadius: 15, marginBottom: 20 }}>
-      //     <View style={{ width: 200, marginLeft: 15 }}>
-      //       <Text style={styles.textcart}>{item.name}</Text>
-      //     </View>
-      //     <View style={{ width: 100 }}>
-      //       <Text style={styles.textcart}>{item.actionType}</Text>
-      //     </View>
-      //     <View style={{ width: 70 }}>
-      //       <Text style={styles.textcart}>{item.stock}</Text>
-      //     </View>
-      //   </View>
-      // </TouchableWithoutFeedback>
       <ItemCart item={item} removeItem={removeItem} />
     );
   };
+
+  const ShowCart = () => {
+    setShowCart(false)
+  }
+
+  const Push = () => {
+    setCurrentPage(1);
+    setProductByIdWh([]);
+    setPage(1);
+    setAddStock([]);
+    setReRender(!reRender);
+    setShowCart(false);
+  }
 
   return (
     <>
@@ -298,56 +299,7 @@ const Detailscreen = ({ route }) => {
 
 
         <Modal visible={showCart} transparent={true} animationType="none">
-          <View style={styles.ViewCart}>
-            <View style={styles.listcart}>
-              <FlatList
-                data={addStock}
-                numColumns={1}
-                keyExtractor={item => item.name}
-                renderItem={Itemcart}
-              />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', height: 100 }}>
-              <Appbutton title="PUSH" onPress={() => {
-                Alert.alert('Notice!!!', 'Are you sure want to do this?', [
-                  {
-                    text: 'Yes',
-                    onPress: async () => {
-                      const tokenuser = await AsyncStorage.getItem('idtoken');
-
-                      await fetch(
-                        'https://cnpmwarehouse.herokuapp.com/products',
-                        {
-                          method: 'POST',
-                          headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${tokenuser}`,
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            products: addStock,
-                          }),
-                        },
-                      )
-                        .then((res) => res.json())
-                        .then((resdata) => {
-                          if (resdata.statusCode === 200) {
-                            setCurrentPage(1);
-                            setProductByIdWh([]);
-                            setPage(1);
-                            setAddStock([]);
-                            setReRender(!reRender);
-                            setShowCart(false);
-                          }
-                        });
-                    },
-                  },
-                  { text: 'No', style: 'cancel' },
-                ]);
-              }} />
-              <Appbutton title="CANCEL" onPress={() => setShowCart(false)} />
-            </View>
-          </View>
+          <CartModal addStock={addStock} Itemcart={Itemcart} ShowCart={ShowCart} Push={Push}/>
         </Modal>
 
 
@@ -391,9 +343,6 @@ const Detailscreen = ({ route }) => {
                     onPress: () => {
                       console.log('addSearch sau khi search' + searchProduct);
                       handleCart();
-                      console.log(addStock);
-                      console.log(addStock);
-                      console.log(addStock);
                       console.log(addStock);
                     }
                   },
