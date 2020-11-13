@@ -10,7 +10,8 @@ import {
   ActivityIndicator,
   TextInput,
   Alert,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Button
 } from 'react-native';
 import Searchproduct from '../component/Searchproduct';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -20,11 +21,15 @@ import Appbutton from '../component/Appbutton';
 import Addproduct from '../component/Addproduct';
 import Input from '../component/Input';
 import CartModal from '../component/modalComponent/CartModal'
-
+import SearchModal from '../component/modalComponent/SearchModal'
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import jwt_decode from "jwt-decode";
 //ModalComponent
 import ItemCart from '../component/modalComponent/ItemCart'
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import AddUser from '../component/modalComponent/AddUser'
 
-const Detailscreen = ({ route }) => {
+const Detailscreen = ({ route, navigation }) => {
   const [productByIdWh, setProductByIdWh] = useState([]);
   const [isShowModal, setShowModal] = useState(false);
   const [note, setNote] = useState('');
@@ -42,7 +47,40 @@ const Detailscreen = ({ route }) => {
   const [searchProduct, setSearchProduct] = useState([]);
   const [showCart, setShowCart] = useState(false)
   //const [cart, setCart] = useState([]);
+  //AddUser Start
+  const [adduser, setAddUser] = useState(false)
+  const [showAdduser, setShowAdduser] = useState(false)
 
+  const checkToken = async () => {
+    const tokenuser = await AsyncStorage.getItem('idtoken');
+    var decoded = jwt_decode(tokenuser);
+    setAddUser(decoded.permissionIds[0].permission === 'CHIEF_EMPLOYEE')
+    console.log("in Funct " + adduser);
+    console.log(decoded.permissionIds[0].permission === 'CHIEF_EMPLOYEE')
+  };
+  
+  useEffect(() => {
+    checkToken();
+    navigation.setOptions({
+      headerRight: () => {
+        
+        console.log("in use EFF " + adduser)
+        return adduser ?
+          (
+            <TouchableOpacity onPress={() => setShowAdduser(true)}>
+              <FontAwesomeIcon
+                style={styles.icondetail}
+                icon={faUserPlus}
+                size={25}
+              />
+            </TouchableOpacity>
+          ) : null
+      },
+    });
+  });
+
+
+  //AddUser End
   // ham nay noi 2 mang addstock va searchproduct
   const handleCart = () => {
     setAddStock(addStock.concat(searchProduct));
@@ -273,6 +311,10 @@ const Detailscreen = ({ route }) => {
     setShowCart(false);
   }
 
+  const ShowAdd = () => {
+    setShowAdd(false);
+  }
+
   return (
     <>
       <View
@@ -299,9 +341,11 @@ const Detailscreen = ({ route }) => {
 
 
         <Modal visible={showCart} transparent={true} animationType="none">
-          <CartModal addStock={addStock} Itemcart={Itemcart} ShowCart={ShowCart} Push={Push}/>
+          <CartModal addStock={addStock} Itemcart={Itemcart} ShowCart={ShowCart} Push={Push} />
         </Modal>
-
+        <Modal visible={showAdduser} transparent={true} animationType="none">
+            <AddUser showAddUser={setShowAdduser} />
+        </Modal>
 
         <Modal visible={isShowModal} transparent={true} animationType="none">
           <View style={styles.centeredView}>
@@ -316,7 +360,7 @@ const Detailscreen = ({ route }) => {
         </Modal>
 
         <Modal visible={showAdd} animationType="none">
-          <View style={styles.addproduct}>
+          {/* <View style={styles.addproduct}>
             <View style={{ marginHorizontal: 15, marginBottom: 40 }}>
               <TextInput
                 style={styles.searchInput}
@@ -361,6 +405,17 @@ const Detailscreen = ({ route }) => {
               }} />
             </View>
           </View>
+          updateQuery,add_search,idwarehouse,separate,handleCart,handlejoinarray,ShowAdd */}
+
+          <SearchModal
+            updateQuery={updateQuery}
+            add_search={add_search}
+            idwarehouse={idwarehouse}
+            separate={separate}
+            handleCart={handleCart}
+            handlejoinarray={handlejoinarray}
+            ShowAdd={ShowAdd}
+            query={query} />
         </Modal>
         <FlatList
           data={productByIdWh}

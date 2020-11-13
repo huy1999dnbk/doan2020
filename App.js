@@ -51,133 +51,10 @@ function CustomDrawerContent({ ...props }) {
 
 
 const MainRoutes = () => {
-  const [adduser, setAddUser] = useState(false);
-  const [query, setQuery] = useState('');
-  const [user, setUser] = useState([]);
-  const checkToken = async () => {
-    const tokenuser = await AsyncStorage.getItem('idtoken');
-    var decoded = jwt_decode(tokenuser);
-    if (decoded.permissionIds[0].permission == 'CHIEF_EMPLOYEE') {
-      setAddUser(true);
-    }
-  };
-  checkToken();
-  const ADD_USER = () => {
-    return (
-      <TouchableOpacity onPress={() => setShowModal(true)}>
-        <FontAwesomeIcon
-          style={styles.icondetail}
-          icon={faUserPlus}
-          size={25}
-        />
-      </TouchableOpacity>
-    )
-  };
-  const [showModal, setShowModal] = useState(false);
-
-
-
-
-  const fetchUser = async () => {
-    const tokenID = await AsyncStorage.getItem('idtoken');
-    if (query === '') return;
-    else if (query !== '') {
-      var handledQuery = query.replace(/ /g, '%20');
-
-      await fetch(
-        `https://cnpmwarehouse.herokuapp.com/Users/search/${handledQuery}`,
-        {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${tokenID}`,
-          },
-        },
-      )
-        .then((res) => res.json())
-        .then((resJson) => {
-          setUser(resJson.data.users);
-        });
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, [query]);
-
-  const updateQuery = (input) => {
-    setQuery(input);
-  };
+  
 
   return (
     <>
-      <Modal visible={showModal} transparent={true} animationType="none">
-        <View style={styles.ViewCart}>
-          <View style={{ marginHorizontal: 10, marginTop: 15 }}>
-            <TextInput
-              placeholder="Find user here"
-              onChangeText={(query) => updateQuery(query)}
-              value={query}
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.listcart}>
-            <FlatList
-              data={user}
-              numColumns={1}
-              extraData={query}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => {
-                return (
-                  <TouchableOpacity onPress={() => {
-                    Alert.alert('Notice!!!', 'Do you agree to add this user?', [
-                      {
-                        text: 'Yes',
-                        onPress: async () => {
-                          await AsyncStorage.removeItem('idtoken');
-                          props.navigation.navigate('Login');
-                        },
-                      },
-                      { text: 'No', style: 'cancel' },
-                    ])
-                  }}>
-                    <View style={{ height: 60, flexDirection: 'row' }}>
-                      <View style={{ alignSelf: 'center', marginRight: '7%' }}>
-                        <FontAwesomeIcon
-                          style={styles.icondetail}
-                          icon={faUserSecret}
-                          size={35}
-                        />
-                      </View>
-                      <View>
-                        <Text style={styles.text} >Name: {item.name}</Text>
-                        <Text style={styles.text} >Phone: {item.phone}</Text>
-                        <Text style={styles.text} >Email: {item.email}</Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-              ItemSeparatorComponent={() => {
-                return (
-                  <View
-                    style={{
-                      height: 1,
-                      width: '100%',
-                      backgroundColor: 'black',
-                      marginBottom: 20,
-                      marginTop: 15
-                    }}
-                  />
-                );
-              }}
-            />
-          </View>
-          <View>
-            <Appbutton title="oke" onPress={() => setShowModal(false)} />
-          </View>
-        </View>
-      </Modal>
       <Stack.Navigator>
         <Stack.Screen
           name="Main"
@@ -200,20 +77,7 @@ const MainRoutes = () => {
         <Stack.Screen
           name="Detail"
           component={Detailscreen}
-          options={() => ({
-            headerRight: () => {
-              return adduser ?
-                (
-                  <TouchableOpacity onPress={() => setShowModal(true)}>
-                    <FontAwesomeIcon
-                      style={styles.icondetail}
-                      icon={faUserPlus}
-                      size={25}
-                    />
-                  </TouchableOpacity>
-                ) : null
-            },
-          })}
+          
         />
       </Stack.Navigator>
     </>
