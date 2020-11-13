@@ -135,29 +135,28 @@ const MainRoutes = () => {
                       {
                         text: 'Yes',
                         onPress: async () => {
-
                           const tokenId1 = await AsyncStorage.getItem('idtoken');
                           const idhouse = await AsyncStorage.getItem('id_warehouse');
                           await fetch(
-                            `https://cnpmwarehouse.herokuapp.com/warehouses/user`,
+                            'https://cnpmwarehouse.herokuapp.com/warehouses/user',
                             {
                               method: 'POST',
                               headers: {
                                 accept: 'application/json',
                                 Authorization: `Bearer ${tokenId1}`,
+                                'Content-Type': 'application/json',
                               },
                               body: JSON.stringify({
                                 userId: item.id.toString(),
-                                warehouseId: idhouse.toString(),
+                                warehouseId: idhouse,
                               }),
-                            }
-                          )
+                            })
                             .then((res) => res.json())
                             .then((resJson) => {
-                              if (resJson.statusCode == 200) {
+                              if (resJson.statusCode === 200) {
                                 console.log(resJson.statusCode);
                               }
-                            });
+                            })
                         },
                       },
                       { text: 'No', style: 'cancel' },
