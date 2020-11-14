@@ -254,7 +254,7 @@ const Detailscreen = ({ route }) => {
 
   const Itemcart = ({ item }) => {
     return (
-      <TouchableWithoutFeedback onPressOut={() => removeItem(item.name)}>
+      <TouchableWithoutFeedback delayPressIn={1100} onPressIn={() => removeItem(item.name)}>
         <View style={{ flexDirection: 'row', width: '100%', height: 70, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderRadius: 15, marginBottom: 20 }}>
           <View style={{ width: 200, marginLeft: 15 }}>
             <Text style={styles.textcart}>{item.name}</Text>

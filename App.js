@@ -154,9 +154,30 @@ const MainRoutes = () => {
                             .then((res) => res.json())
                             .then((resJson) => {
                               if (resJson.statusCode === 200) {
-                                console.log(resJson.statusCode);
+                                Alert.alert(
+                                  'Notification',
+                                  'The user has been successfully granted permission!',
+                                  [
+                                    {
+                                      text: 'cancel',
+                                      style: 'cancel',
+                                    },
+                                  ],
+                                );
+                              } else {
+                                Alert.alert(
+                                  'Error',
+                                  'This user cannot be authorized',
+                                  [
+                                    {
+                                      text: 'cancel',
+                                      style: 'cancel',
+                                    },
+                                  ],
+                                );
                               }
                             })
+                            setQuery('');
                         },
                       },
                       { text: 'No', style: 'cancel' },
