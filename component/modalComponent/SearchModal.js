@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, TextInput, StyleSheet, FlatList, } from 'react-native';
+import { View, TextInput, StyleSheet, FlatList,Alert } from 'react-native';
 import Appbutton from '../Appbutton'
 import Searchproduct from '../Searchproduct'
-const SearchModal = ({ updateQuery,add_search,idwarehouse,separate,handleCart,handlejoinarray,ShowAdd,query }) => {
+const SearchModal = ({ updateQuery,add_search,idwarehouse,separate,handleCart,handlejoinarray,ShowAdd,query,product }) => {
     return (
         <View style={styles.addproduct}>
             <View style={{ marginHorizontal: 15, marginBottom: 40 }}>

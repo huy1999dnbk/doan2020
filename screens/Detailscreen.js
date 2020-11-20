@@ -77,8 +77,6 @@ const Detailscreen = ({ route, navigation }) => {
       },
     });
   });
-
-
   //AddUser End
   // ham nay noi 2 mang addstock va searchproduct
   const handleCart = () => {
@@ -414,7 +412,8 @@ const Detailscreen = ({ route, navigation }) => {
             handleCart={handleCart}
             handlejoinarray={handlejoinarray}
             ShowAdd={ShowAdd}
-            query={query} />
+            query={query}
+            product={product} />
         </Modal>
         <FlatList
           data={productByIdWh}
